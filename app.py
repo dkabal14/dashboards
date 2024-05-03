@@ -1,20 +1,61 @@
 import streamlit as st
 import pandas as pd
-import requests as rq
+import matplotlib.pyplot as plt
 from Classe_Highbond.Highbond_API_Class import hbapi
 
 
 tkhb = st.text_input(label="Insira seu token", type='password')
 org_id = st.text_input('Informe o ID da organização:')
-server = st.selectbox('Escolha o servidor:', options=['apis-us.highbond.com', 'apis-ca.highbond.com', 'apis-eu.highbond.com', 'apis-ap.highbond.com', 'apis-au.highbond.com', 'apis-af.highbond.com', 'apis-sa.highbond.com', 'apis.highbond-gov.com', 'apis.highbond-gov2.com'])
+choose_server = st.selectbox('Escolha o servidor:', options=['EUA', 'Canadá', 'Europa', 'Ásia', 'Oceania', 'África', 'América do Sul', 'US Feds', 'US States'])
 
-def load_table():
+if choose_server == 'EUA':
+    server = 'apis-us.highbond.com'
+elif choose_server == 'Canadá': 
+    server = 'apis-ca.highbond.com'
+elif choose_server == 'Europa':
+    server = 'apis-eu.highbond.com'
+elif choose_server == 'Ásia':
+    server = 'apis-ap.highbond.com'
+elif choose_server == 'Oceania':
+    server = 'apis-au.highbond.com'
+elif choose_server == 'África':
+    server = 'apis-af.highbond.com'
+elif choose_server == 'América do Sul':
+    server = 'apis-sa.highbond.com'
+elif choose_server == 'US Feds':
+    server = 'apis.highbond-gov.com'
+elif choose_server == 'US States':
+    server = 'apis.highbond-gov2.com'
+else:
+    server = 'apis-us.highbond.com'
+
+def connect_hb():
     ihb = hbapi(token=tkhb, organization_id=org_id, server=server, talkative=True)
-    jsonRobots = ihb.getRobots()
-    dfRobots = pd.json_normalize(jsonRobots['data'])
-    return dfRobots
+    return ihb
 
 button = st.button('Iniciar a tabela!')
 if button:
-    st.text("# Robôs Disponíveis:")
-    st.dataframe(load_table())
+    ihb = connect_hb()
+    jsonRobots = ihb.getRobots()
+    dfRobots = pd.json_normalize(jsonRobots['data'])
+
+    liCategories = dfRobots['attributes.category'].drop_duplicates().tolist()
+    
+    dfCount = dfRobots.groupby('attributes.category').count()
+
+    # labels = ""
+    # for label in liCategories:
+    #     labels = labels + "," + label
+    
+    labels = liCategories
+    size = dfCount['id'].tolist()
+
+    pieChart, ax1 = plt.subplots()
+
+    ax1.pie(size, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax1.axis('equal')
+
+    st.markdown("### Robôs Disponíveis:")
+    st.dataframe(dfRobots)
+    st.markdown('### Quantidade de Robôs por Categoria:')
+    st.pyplot(pieChart)
