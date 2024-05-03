@@ -36,6 +36,11 @@ def connect_hb():
 button = st.button('Iniciar a tabela!')
 if button:
     try:
+        if not bool(tkhb):
+            raise Exception("O token não foi preenchido!")
+        elif not bool(org_id):
+            raise Exception("O id da organização não foi preenchido!")
+
         ihb = connect_hb()
         jsonRobots = ihb.getRobots()
         dfRobots = pd.json_normalize(jsonRobots['data'])
