@@ -48,12 +48,9 @@ if button:
         liCategories = dfRobots['attributes.category'].drop_duplicates().tolist()
         
         dfCount = dfRobots.groupby('attributes.category').count()
-
-        # labels = ""
-        # for label in liCategories:
-        #     labels = labels + "," + label
         
-        labels = liCategories
+        # labels = liCategories
+        labels = dfCount.index.tolist()
         size = dfCount['id'].tolist()
 
         pieChart, ax1 = plt.subplots()
