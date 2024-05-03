@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from Classe_Highbond.Highbond_API_Class import hbapi
 
 
-tkhb = st.text_input(label="Insira seu token", type='password')
+tkhb = st.text_input(label="Insira seu token de API do Diligent One", type='password')
 org_id = st.text_input('Informe o ID da organização:')
-choose_server = st.selectbox('Escolha o servidor:', options=['EUA', 'Canadá', 'Europa', 'Ásia', 'Oceania', 'África', 'América do Sul', 'US Feds', 'US States'])
+choose_server = st.selectbox('Escolha o servidor de API do Diligent One:', options=['EUA', 'Canadá', 'Europa', 'Ásia', 'Oceania', 'África', 'América do Sul', 'US Feds', 'US States'])
 
 if choose_server == 'EUA':
     server = 'apis-us.highbond.com'
@@ -35,27 +35,30 @@ def connect_hb():
 
 button = st.button('Iniciar a tabela!')
 if button:
-    ihb = connect_hb()
-    jsonRobots = ihb.getRobots()
-    dfRobots = pd.json_normalize(jsonRobots['data'])
+    try:
+        ihb = connect_hb()
+        jsonRobots = ihb.getRobots()
+        dfRobots = pd.json_normalize(jsonRobots['data'])
 
-    liCategories = dfRobots['attributes.category'].drop_duplicates().tolist()
-    
-    dfCount = dfRobots.groupby('attributes.category').count()
+        liCategories = dfRobots['attributes.category'].drop_duplicates().tolist()
+        
+        dfCount = dfRobots.groupby('attributes.category').count()
 
-    # labels = ""
-    # for label in liCategories:
-    #     labels = labels + "," + label
-    
-    labels = liCategories
-    size = dfCount['id'].tolist()
+        # labels = ""
+        # for label in liCategories:
+        #     labels = labels + "," + label
+        
+        labels = liCategories
+        size = dfCount['id'].tolist()
 
-    pieChart, ax1 = plt.subplots()
+        pieChart, ax1 = plt.subplots()
 
-    ax1.pie(size, labels=labels, autopct='%1.1f%%', startangle=90)
-    ax1.axis('equal')
+        ax1.pie(size, labels=labels, autopct='%1.1f%%', startangle=90)
+        ax1.axis('equal')
 
-    st.markdown("### Robôs Disponíveis:")
-    st.dataframe(dfRobots)
-    st.markdown('### Quantidade de Robôs por Categoria:')
-    st.pyplot(pieChart)
+        st.markdown("### Robôs Disponíveis:")
+        st.dataframe(dfRobots)
+        st.markdown('### Quantidade de Robôs por Categoria:')
+        st.pyplot(pieChart)
+    except Exception as e:
+        st.text(f'Não foi possível montar as tabelas devido ao seguinte problema:\n\n{e}')
