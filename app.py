@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from Classe_Highbond.Highbond_API_Class import hbapi
 
 
+st.set_page_config(page_title='Consulta de Robôs',  layout='wide', page_icon=':robot:')
+
 def connect_hb():
     ihb = hbapi(token=tkhb, organization_id=org_id, server=server, talkative=True)
     return ihb
