@@ -2,9 +2,21 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from Classe_Highbond.Highbond_API_Class import hbapi
+from PIL import Image
 
 
-st.set_page_config(page_title='Consulta de Robôs',  layout='wide', page_icon=':robot:')
+st.set_page_config(
+    page_title='Consulta de Robôs',  
+    layout='wide', 
+    page_icon='img/Quality_Icon.svg'
+)
+
+col1, col2, col3 = st.columns((1, 1, 1))
+
+with col2:
+    st.image(Image.open("img/Quality_Logo.png"))
+
+st.title(body="Consulta de Robôs no Diligent One")
 
 def connect_hb():
     ihb = hbapi(token=tkhb, organization_id=org_id, server=server, talkative=True)
